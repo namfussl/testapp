@@ -1,7 +1,9 @@
 from sqlalchemy import Column, Integer, String, DateTime, Enum, Boolean
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from app.core.database import Base
 import enum
+import uuid
 
 
 class UserRole(str, enum.Enum):
@@ -12,8 +14,8 @@ class UserRole(str, enum.Enum):
 
 class User(Base):
     __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
+    
+    id = Column("user_uuid", UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     email = Column(String, unique=True, index=True, nullable=False)
     full_name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)

@@ -14,3 +14,8 @@ yarn-error.log
 
 # OS
 .DS_Store
+
+# Debug and temporary scripts
+backend/backend_debug.log
+backend/drop_invites.py
+backend/inspect_db.py

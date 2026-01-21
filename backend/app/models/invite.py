@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Enum, Boolean, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from app.core.database import Base
 import enum
@@ -19,8 +20,8 @@ class Invite(Base):
     email = Column(String, index=True, nullable=False)
     role = Column(String, nullable=False)  # 'client' or 'fee_earner'
     status = Column(Enum(InviteStatus), default=InviteStatus.PENDING)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # Admin who created invite
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_uuid"), nullable=True)
+    created_by = Column(UUID(as_uuid=True), ForeignKey("users.user_uuid"), nullable=False)  # Admin who created invite
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     expires_at = Column(DateTime(timezone=True), nullable=True)
 

@@ -1,9 +1,12 @@
 import sys
+import uuid
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, engine
 from app.models.user import User, UserRole
-from app.core.security import get_password_hash
+from datetime import timedelta
+from app.core.security import get_password_hash, create_access_token
+from app.core.config import settings
 
 def debug_and_create_admin():
     db = SessionLocal()
@@ -41,12 +44,24 @@ def debug_and_create_admin():
         existing_user = db.execute(check_user_sql, {"email": admin_email}).fetchone()
         
         if existing_user:
-            print(f"Admin user {admin_email} already exists. Resetting password...")
+            print(f"Admin user {admin_email} already exists. Resetting password and role...")
             hashed = get_password_hash("admin123")
-            update_sql = text("UPDATE users SET hashed_password = :password WHERE email = :email")
-            db.execute(update_sql, {"password": hashed, "email": admin_email})
+            # Update role as well to ensure it matches the Enum (e.g. 'ADMIN' vs 'admin')
+            update_sql = text("UPDATE users SET hashed_password = :password, role = :role WHERE email = :email")
+            db.execute(update_sql, {"password": hashed, "role": admin_role_value, "email": admin_email})
             db.commit()
-            print("Password reset to: admin123")
+            print(f"Password reset to: admin123, Role set to: {admin_role_value}")
+            
+            # Generate and print token for existing user
+            access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+            user = db.query(User).filter(User.email == admin_email).first()
+            if user:
+                 access_token = create_access_token(
+                    data={"sub": user.email, "user_id": str(user.id), "role": user.role},
+                    expires_delta=access_token_expires,
+                )
+                 print(f"\nYOUR_ADMIN_TOKEN (Bear this token for API calls):\n{access_token}")
+            
             return
 
         print("Creating admin user...")
@@ -54,11 +69,12 @@ def debug_and_create_admin():
         hashed = get_password_hash(password)
         
         insert_sql = text("""
-            INSERT INTO users (email, full_name, hashed_password, role, is_active, created_at, updated_at)
-            VALUES (:email, :full_name, :password, :role, :is_active, NOW(), NOW())
+            INSERT INTO users (user_uuid,email, full_name, hashed_password, role, is_active, created_at, updated_at)
+            VALUES (:user_uuid,:email, :full_name, :password, :role, :is_active, NOW(), NOW())
         """)
         
         db.execute(insert_sql, {
+            "user_uuid": uuid.uuid4(),
             "email": admin_email,
             "full_name": "Admin User",
             "password": hashed,
@@ -67,9 +83,26 @@ def debug_and_create_admin():
         })
         db.commit()
         
-        print("Admin user created successfully!")
-        print(f"Email: {admin_email}")
-        print(f"Password: {password}")
+        # Generate access token for the admin
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        # Note: user_id must be a string as per our previous fix in auth.py
+        # We need to fetch the user object first to get the ID if we just inserted it
+        # However, for the insert case, we generated the UUID in Python, so we might know it if we captured it.
+        # But let's just query the user back to be safe and consistent.
+        
+        user = db.query(User).filter(User.email == admin_email).first()
+        
+        if user:
+            access_token = create_access_token(
+                data={"sub": user.email, "user_id": str(user.id), "role": user.role},
+                expires_delta=access_token_expires,
+            )
+            print("Admin user created/verified successfully!")
+            print(f"Email: {admin_email}")
+            print(f"Password: {password}")
+            print(f"\nYOUR_ADMIN_TOKEN (Bear this token for API calls):\n{access_token}")
+        else:
+             print("Error: Could not retrieve user to generate token.")
         
     except Exception as e:
         print(f"Error: {e}")

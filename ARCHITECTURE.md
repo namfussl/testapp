@@ -161,6 +161,7 @@ User now can sign in
 ### Users Table
 ```sql
 CREATE TABLE users (
+    user_uuid uuid PRIMARY KEY;
     id SERIAL PRIMARY KEY,
     email VARCHAR UNIQUE NOT NULL,
     full_name VARCHAR NOT NULL,

@@ -5,14 +5,15 @@ const Home = () => {
   return (
     <div style={styles.container}>
       <div style={styles.navbar}>
-        <h1 style={styles.navTitle}>SaaS Collaboration Platform</h1>
+        <h1 style={styles.navTitle}>Probate App</h1>
+        <img src="/images/logo.png" alt="Logo" style={styles.logo} />
       </div>
 
       <div style={styles.mainContent}>
         <div style={styles.hero}>
-          <h1 style={styles.heroTitle}>Welcome to the SaaS Collaboration Platform</h1>
+          <h1 style={styles.heroTitle}>Welcome to the Probate Platform</h1>
           <p style={styles.heroSubtitle}>
-            Connect clients with fee earners for seamless collaboration
+            Seamlessly manage the end-to-end probate workflow
           </p>
 
           <div style={styles.buttonContainer}>
@@ -29,19 +30,19 @@ const Home = () => {
           <div style={styles.feature}>
             <div style={styles.featureIcon}>👥</div>
             <h3>Connect</h3>
-            <p>Easily connect clients with fee earners for your projects</p>
+            <p>Easily complete the probate questionnaire and upload relevant files</p>
           </div>
 
           <div style={styles.feature}>
             <div style={styles.featureIcon}>🔄</div>
             <h3>Collaborate</h3>
-            <p>Work together seamlessly with built-in collaboration tools</p>
+            <p>Track projects, tasks, and communication in one plac</p>
           </div>
 
           <div style={styles.feature}>
             <div style={styles.featureIcon}>✅</div>
             <h3>Manage</h3>
-            <p>Track projects, tasks, and communication in one place</p>
+            <p>Respond to additional requests and approve pre-submissions</p>
           </div>
         </div>
       </div>
@@ -56,11 +57,19 @@ const styles = {
     fontFamily: 'Arial, sans-serif',
   },
   navbar: {
-    backgroundColor: '#333',
+    backgroundColor: '#000',
     color: 'white',
     padding: '20px 40px',
     textAlign: 'center',
-    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+    boxShadow: '0 2px 5px rgba(10, 2, 2, 0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '20px',
+  },
+  logo: {
+    height: '50px',
+    width: 'auto',
   },
   navTitle: {
     margin: 0,
@@ -91,7 +100,7 @@ const styles = {
     justifyContent: 'center',
   },
   primaryBtn: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#000',
     color: 'white',
     padding: '12px 30px',
     borderRadius: '4px',
@@ -103,10 +112,10 @@ const styles = {
   },
   secondaryBtn: {
     backgroundColor: 'transparent',
-    color: '#007bff',
+    color: '#000',
     padding: '12px 30px',
     borderRadius: '4px',
-    border: '2px solid #007bff',
+    border: '2px solid #000',
     textDecoration: 'none',
     fontSize: '16px',
     fontWeight: 'bold',
